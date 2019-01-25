@@ -10,6 +10,6 @@
 !/node/.gitkeep
 /docker-compose.yml
 .idea/
-/magento
+
 
 !/build/package.json
