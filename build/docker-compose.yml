@@ -1,4 +1,11 @@
 version: '3'
+
+networks:
+  shared:
+    external: true
+  default:
+    external: false
+
 services:
   nginx:
     image: nginx:latest
@@ -7,16 +14,18 @@ services:
       - "8{{PROJECT_NUMBER}}:80"
     links:
       - php
-      - mailhog
     volumes:
       - {{PROJECT_ABSOLUTE_PATH}}{{PROJECT_FOLDER}}:/usr/share/nginx/html
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
     working_dir: "/usr/share/nginx/html"
+    networks:
+      - default
   php:
     image: fr4gm3nt/mocker:php{{PHP_VERSION}}
     container_name: "{{PROJECT_NAME}}-php"
     links:
       - db
+      - mailhog
     volumes:
       - {{PROJECT_ABSOLUTE_PATH}}{{PROJECT_FOLDER}}:/usr/share/nginx/html
       - ./php/bashrc:/root/.bashrc
@@ -29,18 +38,6 @@ services:
     working_dir: "/usr/share/nginx/html"
     ports:
       - "9{{PROJECT_NUMBER}}:9000"
-  db:
-    image: mysql:5
-    container_name: "{{PROJECT_NAME}}-db"
-    ports:
-      - "13{{PROJECT_NUMBER}}:3306"
-    volumes:
-      - ./db/data:/var/lib/mysql
-      - ./db:/usr/share/nginx/html
-    environment:
-      - MYSQL_ROOT_PASSWORD=root
-  mailhog:
-    image: mailhog/mailhog
-    container_name: "{{PROJECT_NAME}}-mailhog"
-    ports:
-      - "6{{PROJECT_NUMBER}}:8025"
+    networks:
+      - shared
+      - default

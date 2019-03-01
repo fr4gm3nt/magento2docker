@@ -31,12 +31,12 @@ echo -e "\\r${CHECK_MARK} \e[0;32m File permissions set up"
 
 sleep 10
 echo -e " \e[0;33m ---========Creating database=========---"
-./bin/exec db 'mysql -uroot -proot -e "CREATE DATABASE {{DATABASE_NAME}} /*!40100 COLLATE 'utf8_general_ci' */";'
+docker-compose exec bash bash -c 'mysql -uroot -proot -e "CREATE DATABASE {{DATABASE_NAME}} /*!40100 COLLATE 'utf8_general_ci' */";'
 
 sleep 10
 if [ -n "{{DUMP_NAME}}" ]; then
 echo -e " \e[0;33m ---======Loading database dump=======---"
-    ./bin/exec db "mysql -uroot -proot {{DATABASE_NAME}} < /usr/share/nginx/html/{{DUMP_NAME}}"
+    docker-compose exec db bash -c "mysql -uroot -proot {{DATABASE_NAME}} < /usr/share/nginx/html/{{DUMP_NAME}}"
 fi
 
 echo -e "\\r${CHECK_MARK} \e[0;32m Installer has finished the job"
