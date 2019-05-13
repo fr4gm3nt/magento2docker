@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  {{NGINX_PROXY}}:
+    image: jwilder/nginx-proxy
+    ports:
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    container_name: "{{NGINX_PROXY}}"
+  {{DB_CONTAINER}}:
+    image: mysql:5
+    container_name: "{{DB_CONTAINER}}"
+    ports:
+      - "13306:3306"
+    volumes:
+      - ./db/data:/var/lib/mysql
+      - ./db:/usr/share/nginx/html
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+  {{MAILHOG_CONTAINER}}:
+    image: mailhog/mailhog
+    container_name: "{{MAILHOG_CONTAINER}}"
+    ports:
+      - "18025:8025"
+
+networks:
+  default:
+    external:
+      name: nginx-proxy

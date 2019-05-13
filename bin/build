@@ -1,116 +1,56 @@
 #!/usr/bin/env bash
-
-getUserInput() {
-    local userInput=''
-    read userInput
-    if [ -z "$userInput" ]; then
-        userInput="$1"
-    fi
-    echo $userInput
-}
-
 CHECK_MARK="\033[0;32m\xE2\x9C\x94\033[0m"
 source $(dirname "$0")/custom.conf
-gitConfigLink=${gitRepoLink#*git clone}
+
+dockerNetworkExits=$(docker network ls -q -f name="nginx-proxy")
+
+echo -e "\e[1;32mStep 1/2 - Building"
+#git
 if [ -n "$gitRepoLink" ]; then
 gitConfigLink=${gitRepoLink#*git clone}
-echo -e "\e[1;33mFound git link"$gitConfigLink" in custom.conf"
-echo -e "\e[1;33mIf You don't want to use 'git clone', remove this variable from custom.conf"
+echo -e "\e[1;33mUsing git link"$gitConfigLink""
 fi
 
-echo -n -e "\e[1;33m[Recommended] Git repository URL (preceded by 'git clone'): "
-gitRepo=$(getUserInput "")
-
-if [ -z "$gitRepo" ]; then
-    gitRepo=$gitRepoLink
-    echo -e "$gitConfigLink"
-    # trim project vars from git link
-fi
-
-    gitLink=${gitRepo#*/}
-    projectFolder=${gitLink%.*}
-    projectNumber=${projectFolder/-*/}
-
-projectName=${projectFolder/$projectNumber-/}
-echo -e "\e[0;33mProject folder: "$projectFolder
-echo -e "\e[0;33mProject number: "$projectNumber
-echo -e "\e[0;33mProject name: "$projectName
-
-echo -n -e "\e[1;37m[DEFAULT=$projectFolder] Project source folder: "
-projectFolder=$(getUserInput $projectFolder)
-
-echo -n "[DEFAULT=$projectName] Project name: "
-projectName=$(getUserInput $projectName)
-
-echo -n -e "\e[1;37m[DEFAULT=$projectNumber] Project number - four digits: "
-projectNumber=$(getUserInput "$projectNumber")
-
-if [[ -n ${projectNumber//[0-9]/} ]]; then
-    echo -e "\e[0;31mProject number contains letters! \nPlease run build again!"; exit
-fi
-
-if [ ${#projectNumber} -eq 4 ]; then echo -e "${CHECK_MARK}  \e[0;32mDefault ports will be created based on Project Number \n${CHECK_MARK}\e[0;32m  First digit will be trimmed"
-    else echo -e "\e[0;31m" $projectNumber - "is not valid Project Number \n Please run 'build' again and enter FOUR digits!"; exit
-fi
-
-echo -n -e "\e[1;37m[DEFAULT=7.1] PHP version: "
-phpVersion=$(getUserInput "7.1")
-
-mysqlDatabaseName=${projectName/-*/}
-
-echo -n -e "\e[1;37m[DEFAULT=$mysqlDatabaseName] Database name: "
-mysqlDatabaseName=$(getUserInput $mysqlDatabaseName)
-
-echo -n -e "\e[1;37mDo you want to import newest database dump from db directory (e - enter filename)? [Y/n/e]: "
-doImportDb=$(getUserInput "Y")
-    if [ $doImportDb == "Y" ] || [ $doImportDb == "y" ]; then
+echo -n -e  "\e[1;37mPHP version: $phpVersion \n"
+echo -n -e "\e[1;37mDatabase name: $mysqlDatabaseName\n"
         cd db
         dumpName=$(ls -t *.sql | head -1)
-        cd ../.
-    elif [ $doImportDb == "e" ] || [ $doImportDb == "E" ]; then
-        echo -n -e "\e[1;37mEnter full database name: "
-        dumpName=$(getUserInput)
-        if [ -z "$dumpName" ]; then echo -e "\e[0;31mFilename cannot be empty!"; exit
-        fi
-    else
-        echo "Skipping import"
-    fi
-
-if [ -n "$dumpName" ]; then
-echo -e "${CHECK_MARK}  \e[0;32mDatabase""\e[1;32m "$dumpName "\e[0;32mwill be imported to ""\e[1;32m"$mysqlDatabaseName
-else
-echo "No database will be imported"
-fi
+        cd ../
+echo -n -e "\e[1;37mDatabase file to import: $dumpName\n"
 
 cp ./build/docker-compose.yml ./docker-compose.yml
-
-projectNumber="${projectNumber:1}"
 
 sed -i "s/{{PROJECT_FOLDER}}/$projectFolder/g" ./docker-compose.yml
 sed -i "s/{{PROJECT_NAME}}/$projectName/g" ./docker-compose.yml
 sed -i "s/{{PROJECT_NUMBER}}/$projectNumber/g" ./docker-compose.yml
-sed -i "s/{{PROJECT_ABSOLUTE_PATH}}/$projectAbsolutePath/g" ./docker-compose.yml
 sed -i "s/{{PHP_VERSION}}/$phpVersion/g" ./docker-compose.yml
 
 cp ./build/default.conf ./nginx/
 sed -i "s/{{PROJECT_NAME}}/$projectName/g" ./nginx/default.conf
+sed -i "s>{{PROJECT_NUMBER}}>$projectNumber>g" ./nginx/default.conf
 
 cp ./build/exec ./bin/exec
 sed -i "s/{{PROJECT_NAME}}/$projectName/g" ./bin/exec
-sed -i "s/{{PROJECT_ABSOLUTE_PATH}}/$projectAbsolutePath/g" ./bin/exec
 sed -i "s/{{PROJECT_FOLDER}}/$projectFolder/g" ./bin/exec
 
 cp ./build/install ./bin/install
 sed -i "s/{{DUMP_NAME}}/$dumpName/g" ./bin/install
 sed -i "s/{{DATABASE_NAME}}/$mysqlDatabaseName/g" ./bin/install
 sed -i "s/{{PROJECT_NAME}}/$projectName/g" ./bin/install
-sed -i "s>{{GIT_REPO}}>$gitRepo>g" ./bin/install
-sed -i "s>{{PROJECT_ABSOLUTE_PATH}}>$projectAbsolutePath>g" ./bin/install
+sed -i "s>{{GIT_REPO}}>$gitConfigLink>g" ./bin/install
 sed -i "s>{{PROJECT_FOLDER}}>$projectFolder>g" ./bin/install
 sed -i "s>{{PROJECT_NUMBER}}>$projectNumber>g" ./bin/install
+sed -i "s/{{DB_CONTAINER}}/$dbContainer/g" ./bin/install
+
+cp ./build/docker-compose-shared.yml ./docker-compose-shared.yml
+sed -i "s/{{NGINX_PROXY}}/$nginxProxy/g" ./docker-compose-shared.yml
+sed -i "s/{{DB_CONTAINER}}/$dbContainer/g" ./docker-compose-shared.yml
+sed -i "s/{{MAILHOG_CONTAINER}}/$mhContainer/g" ./docker-compose-shared.yml
+
 
 mkdir -p ./magento/app/etc
 mkdir -p ./magento/pub
+mkdir -p ./magento/bin
 cp ./bin/exec ./magento/bin/
 cp -f ./build/magento/env.php ./magento/app/etc
 sed -i "s/{{DATABASE_NAME}}/$mysqlDatabaseName/g" ./magento/app/etc/env.php
@@ -125,6 +65,7 @@ cp ./build/php_bashrc ./php/bashrc
 
 chmod +x ./bin/*
 
-echo -e "${CHECK_MARK}  \e[0;32mFinished building without errors."
-echo -e "Run bin/install"
-echo -e "After installation You can find Your project at \e[1;32mlocalhost:8"$projectNumber
+echo -e "\e[1;32mRunning bin/install"
+echo -e "\e[1;32mStep2/2"
+
+./bin/install

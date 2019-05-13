@@ -1,42 +1,56 @@
 #!/usr/bin/env bash
 CHECK_MARK="\033[0;32m\xE2\x9C\x94\033[0m"
 
-echo -n -e "\e[0;33m    Creating project directory: {{PROJECT_ABSOLUTE_PATH}}{{PROJECT_FOLDER}}"
-mkdir -p {{PROJECT_ABSOLUTE_PATH}}{{PROJECT_FOLDER}}
-echo -e "\e[0K\r \e[0;33mCreating project directory: {{PROJECT_ABSOLUTE_PATH}}{{PROJECT_FOLDER}}"
+mkdir -p {{PROJECT_FOLDER}}
+echo -e "\e[0K\r \e[0;32mCreated project directory: {{PROJECT_FOLDER}}"
 echo -e "\\r${CHECK_MARK}  \e[0;32mCreated\e[0m"
 
 GITREPO="{{GIT_REPO}}"
 if [ -n "$GITREPO" ]; then
-echo {{PROJECT_ABSOLUTE_PATH}}{{PROJECT_FOLDER}}"/"
-   $GITREPO {{PROJECT_ABSOLUTE_PATH}}{{PROJECT_FOLDER}}
+echo {{PROJECT_FOLDER}}"/"
+   git clone $GITREPO {{PROJECT_FOLDER}}
 fi
 
 cd magento
 
-cp -r ./* {{PROJECT_ABSOLUTE_PATH}}{{PROJECT_FOLDER}}"/"
+cp -r ./* ".{{PROJECT_FOLDER}}/"
 # cd "$(dirname "$0")/.."
 
 cd ..
 
+#
+# Creating external network for nginx-proxy.
+# https://github.com/jwilder/nginx-proxy
+#
+if [ -n "$dockerNetworkExits" ]; then
+   echo -e "\e[1;33mWARNING: network nginx-proxy already exits. Creation skipped."
+else
+   echo -e "Creating external network nginx-proxy."
+   docker network create nginx-proxy
+fi
+
+
+docker-compose -f docker-compose-shared.yml down
 docker-compose down
 docker-compose build
+docker-compose -f docker-compose-shared.yml up -d
 docker-compose up -d
 
-sleep 10
+
+sleep 5
 echo -e " \e[0;33m ---===Setting up file permissions====---"
 docker-compose exec php bash -c "setfacl -dR -m u:www-data:rwX /usr/share/nginx/html"
 docker-compose exec php bash -c "setfacl -R -m u:www-data:rwX /usr/share/nginx/html"
 echo -e "\\r${CHECK_MARK} \e[0;32m File permissions set up"
 
-sleep 10
+sleep 5
 echo -e " \e[0;33m ---========Creating database=========---"
-docker-compose exec bash bash -c 'mysql -uroot -proot -e "CREATE DATABASE {{DATABASE_NAME}} /*!40100 COLLATE 'utf8_general_ci' */";'
+docker-compose -f docker-compose-shared.yml exec {{DB_CONTAINER}} bash -c 'mysql -uroot -proot -e "CREATE DATABASE {{DATABASE_NAME}} /*!40100 COLLATE 'utf8_general_ci' */";'
 
 sleep 10
 if [ -n "{{DUMP_NAME}}" ]; then
 echo -e " \e[0;33m ---======Loading database dump=======---"
-    docker-compose exec db bash -c "mysql -uroot -proot {{DATABASE_NAME}} < /usr/share/nginx/html/{{DUMP_NAME}}"
+    docker-compose -f docker-compose-shared.yml exec {{DB_CONTAINER}} bash -c "mysql -uroot -proot {{DATABASE_NAME}} < /usr/share/nginx/html/{{DUMP_NAME}}"
 fi
 
 echo -e "\\r${CHECK_MARK} \e[0;32m Installer has finished the job"
