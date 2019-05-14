@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+echo -e "\\r${CHECK_MARK} \e[0;32m Installer Magento"
+docker-compose exec -u www-data php bash -c "composer install"
+docker-compose exec -u www-data php bash -c "composer require snowdog/language-pl_pl"
+docker-compose exec -u www-data php bash -c "bin/magento setup:upgrade"
+echo -e "\\r${CHECK_MARK} \e[0;32m Installer has finished the job"
+
+echo -e "\\r${CHECK_MARK} \e[0;32m Adding taranko-poc.kpl to /etc/hosts"
+sudo sed -i "2i127.0.0.1       host.local www.host.local" /etc/hosts
+
+
+
