@@ -10,6 +10,7 @@
 !/node/.gitkeep
 /docker-compose.yml
 ./docker-compose-shared.yml
+!/db/*.sql
 .idea/
 /magento
 /src/*
