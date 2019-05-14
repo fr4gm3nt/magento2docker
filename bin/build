@@ -4,7 +4,7 @@ source $(dirname "$0")/custom.conf
 
 dockerNetworkExits=$(docker network ls -q -f name="nginx-proxy")
 
-echo -e "\e[1;32mStep 1/2 - Building"
+echo -e "\e[1;32mStep 1/3 - Building"
 #git
 if [ -n "$gitRepoLink" ]; then
 gitConfigLink=${gitRepoLink#*git clone}
@@ -64,8 +64,7 @@ sed -i "s/{{PROJECT_NAME}}/$projectName/g" ./php/php.ini
 cp ./build/php_bashrc ./php/bashrc
 
 chmod +x ./bin/*
-
-echo -e "\e[1;32mRunning bin/install"
-echo -e "\e[1;32mStep2/2"
+echo -e ""
+echo -e "\e[1;32mBuilding complete"
 
 ./bin/install

@@ -5,16 +5,16 @@ services:
     image: nginx:latest
     container_name: "{{PROJECT_NAME}}-nginx"
     ports:
-      - "8{{PROJECT_NUMBER}}:8080"
+      - "8{{PROJECT_NUMBER}}:8{{PROJECT_NUMBER}}"
     volumes:
       - {{PROJECT_FOLDER}}:/usr/share/nginx/html
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
     working_dir: "/usr/share/nginx/html"
-    expose:
-      - 8{{PROJECT_NUMBER}}
+#    expose:
+#      - 8{{PROJECT_NUMBER}}
     environment:
       VIRTUAL_PORT: 8{{PROJECT_NUMBER}}
-      VIRTUAL_HOST: etopia.pl
+      VIRTUAL_HOST: taranko-poc.kpl
   php:
     image: fr4gm3nt/mocker:php{{PHP_VERSION}}
     container_name: "{{PROJECT_NAME}}-php"

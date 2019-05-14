@@ -9,7 +9,9 @@
 /node/*
 !/node/.gitkeep
 /docker-compose.yml
+/docker-compose-shared.yml
 .idea/
 /magento
+/src/*
 
 !/build/package.json

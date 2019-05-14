@@ -1,13 +1,13 @@
 version: '3'
 
 services:
-  {{NGINX_PROXY}}:
-    image: jwilder/nginx-proxy
-    ports:
-      - "8080:8080"
-    volumes:
-      - /var/run/docker.sock:/tmp/docker.sock:ro
-    container_name: "{{NGINX_PROXY}}"
+#  {{NGINX_PROXY}}:
+#    image: jwilder/nginx-proxy
+#    ports:
+#      - "8080:8080"
+#    volumes:
+#      - /var/run/docker.sock:/tmp/docker.sock:ro
+#    container_name: "{{NGINX_PROXY}}"
   {{DB_CONTAINER}}:
     image: mysql:5
     container_name: "{{DB_CONTAINER}}"
