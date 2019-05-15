@@ -19,7 +19,7 @@ return array (
     array (
       'default' => 
       array (
-        'host' => '{{PROJECT_NAME}}-db',
+        'host' => '{{DB_CONTAINER}}-db',
         'dbname' => '{{DATABASE_NAME}}',
         'username' => 'root',
         'password' => 'root',
@@ -40,6 +40,6 @@ return array (
   'x-frame-options' => 'SAMEORIGIN',
   'MAGE_MODE' => 'developer',
     'install' => [
-        'date' => 'Tue, 11 Nov 2018 11:11:11 +0000'
+        'date' => 'Tue, 14 May 2019 11:11:11 +0000'
     ]
 );

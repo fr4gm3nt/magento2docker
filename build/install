@@ -30,28 +30,42 @@ else
    docker network create nginx-proxy
 fi
 
-
 docker-compose -f docker-compose-shared.yml down
 docker-compose down
 docker-compose build
 docker-compose -f docker-compose-shared.yml up -d
 docker-compose up -d
 
+#
+# Get latest db name and import
+#
+cd src/dbdump/
+tarFileName=$(ls -t *.gz | head -1)
+echo -n -e "\e[1;37mExtracting: $tarFileName\n"
+tar -zxvf $tarFileName
+
+dumpName=$(ls -t *.sql | head -1)
+
+echo -n -e "\e[1;37mDatabase file to import: $dumpName\n"
+cd ../../
 
 sleep 5
+
 echo -e " \e[0;33m ---===Setting up file permissions====---"
 docker-compose exec php bash -c "setfacl -dR -m u:www-data:rwX /usr/share/nginx/html"
 docker-compose exec php bash -c "setfacl -R -m u:www-data:rwX /usr/share/nginx/html"
 echo -e "\\r${CHECK_MARK} \e[0;32m File permissions set up"
 
 sleep 5
+
 echo -e " \e[0;33m ---========Creating database=========---"
 docker-compose -f docker-compose-shared.yml exec {{DB_CONTAINER}} bash -c 'mysql -uroot -proot -e "CREATE DATABASE {{DATABASE_NAME}} /*!40100 COLLATE 'utf8_general_ci' */";'
 
 sleep 10
-if [ -n "{{DUMP_NAME}}" ]; then
+
+if [ -n ${dumpName+x} ]; then
 echo -e " \e[0;33m ---======Loading database dump=======---"
-    docker-compose -f docker-compose-shared.yml exec {{DB_CONTAINER}} bash -c "mysql -uroot -proot {{DATABASE_NAME}} < /usr/share/nginx/html/{{DUMP_NAME}}"
+    docker-compose -f docker-compose-shared.yml exec {{DB_CONTAINER}} bash -c "mysql -uroot -proot {{DATABASE_NAME}} < /usr/share/nginx/html/dbdump/$dumpName"
 fi
 
 ./bin/mage

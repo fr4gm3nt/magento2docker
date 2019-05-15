@@ -16,6 +16,7 @@ services:
     volumes:
       - ./db/data:/var/lib/mysql
       - ./db:/usr/share/nginx/html
+      - ./src/dbdump:/usr/share/nginx/html/dbdump/
     environment:
       - MYSQL_ROOT_PASSWORD=root
   {{MAILHOG_CONTAINER}}:
