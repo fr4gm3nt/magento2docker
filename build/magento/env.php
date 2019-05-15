@@ -19,7 +19,7 @@ return array (
     array (
       'default' => 
       array (
-        'host' => '{{DB_CONTAINER}}-db',
+        'host' => '{{DB_CONTAINER}}',
         'dbname' => '{{DATABASE_NAME}}',
         'username' => 'root',
         'password' => 'root',
