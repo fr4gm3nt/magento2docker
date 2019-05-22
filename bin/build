@@ -38,6 +38,7 @@ sed -i "s>{{GIT_REPO}}>$gitConfigLink>g" ./bin/install
 sed -i "s>{{PROJECT_FOLDER}}>$projectFolder>g" ./bin/install
 sed -i "s>{{PROJECT_NUMBER}}>$projectNumber>g" ./bin/install
 sed -i "s/{{DB_CONTAINER}}/$dbContainer/g" ./bin/install
+sed -i "s/{{BRANCH}}/$branch/g" ./bin/install
 
 cp ./build/docker-compose-shared.yml ./docker-compose-shared.yml
 sed -i "s/{{NGINX_PROXY}}/$nginxProxy/g" ./docker-compose-shared.yml

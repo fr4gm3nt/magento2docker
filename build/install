@@ -11,7 +11,7 @@ if [ -n "$GITREPO" ]; then
 echo {{PROJECT_FOLDER}}"/"
    git clone $GITREPO {{PROJECT_FOLDER}}
 fi
-
+git checkout {{BRANCH}}
 cd magento
 
 cp -r ./* ".{{PROJECT_FOLDER}}/"
