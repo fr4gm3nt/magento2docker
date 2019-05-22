@@ -10,3 +10,4 @@ docker-compose exec -u www-data php bash -c "bin/magento cache:enable config"
 echo -e "\\r${CHECK_MARK} \e[0;32m Installer has finished the job"
 
 ./bin/hosts
+

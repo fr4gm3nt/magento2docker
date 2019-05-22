@@ -25,6 +25,7 @@ services:
       - ./db:/var/www/db
       - "${SSH_AUTH_SOCK}:/ssh-agent"
       - ./php/bin/mhsendmail:/usr/local/bin/mhsendmail
+      - .composer:/var/www/.composer
     environment:
       - SSH_AUTH_SOCK=/ssh-agent
     working_dir: "/usr/share/nginx/html"
