@@ -48,7 +48,7 @@ mkdir -p ./magento/app/etc
 mkdir -p ./magento/pub
 mkdir -p ./magento/bin
 cp ./bin/exec ./magento/bin/
-cp ./bin/m2  ./magento/bin
+cp ./build/m2  ./magento/bin
 
 cp -f ./build/magento/env.php ./magento/app/etc
 sed -i "s/{{DATABASE_NAME}}/$mysqlDatabaseName/g" ./magento/app/etc/env.php

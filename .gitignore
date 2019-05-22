@@ -16,5 +16,6 @@ docker-compose-shared.yml
 .idea/
 /magento
 /src/*
+src
 !/bin/mage
 !/build/package.json
