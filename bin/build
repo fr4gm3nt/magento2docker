@@ -28,6 +28,7 @@ sed -i "s>{{PROJECT_NUMBER}}>$projectNumber>g" ./nginx/default.conf
 cp ./build/exec ./bin/exec
 sed -i "s/{{PROJECT_NAME}}/$projectName/g" ./bin/exec
 sed -i "s/{{PROJECT_FOLDER}}/$projectFolder/g" ./bin/exec
+sed -i "s/{{DB_CONTAINER}}/$projectFolder/g" ./bin/exec
 
 cp ./build/install ./bin/install
 sed -i "s/{{DUMP_NAME}}/$dumpName/g" ./bin/install
@@ -47,6 +48,7 @@ mkdir -p ./magento/app/etc
 mkdir -p ./magento/pub
 mkdir -p ./magento/bin
 cp ./bin/exec ./magento/bin/
+cp ./bin/m2  ./magento/bin
 
 cp -f ./build/magento/env.php ./magento/app/etc
 sed -i "s/{{DATABASE_NAME}}/$mysqlDatabaseName/g" ./magento/app/etc/env.php

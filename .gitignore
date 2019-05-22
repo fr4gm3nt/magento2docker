@@ -1,5 +1,6 @@
-/bin/*
-!/bin/build
+/bin/install
+/bin/build
+/bin/exec
 /db/data
 /db/*.sql
 !/db/.gitkeep
@@ -11,6 +12,7 @@
 !/node/.gitkeep
 /docker-compose.yml
 ./docker-compose-shared.yml
+docker-compose-shared.yml
 .idea/
 /magento
 /src/*

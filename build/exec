@@ -30,6 +30,10 @@ if [ "$1" == "-facl" ]; then
     ./bin/exec php "setfacl -R -m u:www-data:rwX /usr/share/nginx/html"
 fi
 
+if [ "$1" == "db" ]; then
+    docker-compose -f docker-compose-shared.yml exec {{DB_CONTAINER}} bash
+fi
+
 if [ -z "$2" ]; then
     docker-compose exec "${1}" /bin/bash
 fi

@@ -19,6 +19,7 @@ services:
       - ./src/dbdump:/usr/share/nginx/html/dbdump/
     environment:
       - MYSQL_ROOT_PASSWORD=root
+    working_dir: "/usr/share/nginx/html"
   {{MAILHOG_CONTAINER}}:
     image: mailhog/mailhog
     container_name: "{{MAILHOG_CONTAINER}}"

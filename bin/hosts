@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+echo -e "\\r${CHECK_MARK} \e[0;32m Adding taranko-poc.kpl to /etc/hosts"
+sudo sed -i "2i127.0.0.1       taranko-poc.kpl www.taranko-poc.kpl" /etc/hosts
+sudo sed -i "2i127.0.0.1       eur.taranko-poc.kpl www.eur.taranko-poc.kpl" /etc/hosts
+sudo sed -i "10iexit" ./bin/mage

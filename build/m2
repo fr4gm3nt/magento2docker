@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+if [ "$1" == "-static" ] || [ "$1" == "-s" ]; then
+bin/magento setup:static-content:deploy -f -j 4 pl_PL en_US
+fi
+
+if [ "$1" == "-su" ]; then
+bin/magento setup:upgrade
+fi
+
+
+if [ "$1" == "-mesu" ]; then
+bin/magento module:enable --all
+bin/magento setup:upgrade
+fi
+
+
+if [ "$1" == "-facl" ]; then
+    setfacl -dR -m u:www-data:rwX /usr/share/nginx/html
+    setfacl -R -m u:www-data:rwX /usr/share/nginx/html
+fi
+
+if [ "$1" == "-rmf" ]; then
+rm -rf generated/* var/view_processed/* var/page_cache/* var/cache/*
+fi
+
+if [ "$1" == "-color" ]; then
+	echo "zmiana koloru"
+    export PS1=" ${debian_chroot:+($debian_chroot)}\[\033[01;33m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[01;35m\]$()\[\033[00m\]\$ "
+fi
