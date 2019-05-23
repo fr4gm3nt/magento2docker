@@ -20,3 +20,4 @@ src
 !/bin/mage
 !/build/package.json
 pub/.gitkeep
+.composer/
