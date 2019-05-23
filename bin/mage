@@ -2,6 +2,7 @@
 
 
 echo -e "\\r${CHECK_MARK} \e[0;32m Installer Magento"
+docker-compose exec php bash -c "chown www-data:www-data /var/www/.composer/"
 docker-compose exec -u www-data php bash -c "composer install"
 docker-compose exec -u www-data php bash -c "bin/magento setup:upgrade"
 docker-compose exec -u www-data php bash -c "bin/magento setup:static-content:deploy -f pl_PL"
