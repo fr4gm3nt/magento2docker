@@ -36,7 +36,7 @@ echo -e " \e[0;33m ---===Git operations - switch branch to {{BRANCH}}====---"
 cd src/dbdump
 git checkout {{BRANCH}}
 sleep 5
-
+chmod +x ./*
 tarFileName=$(ls -t *.gz | head -1)
 echo -n -e "\e[1;37mExtracting: $tarFileName\n"
 tar -zxvf $tarFileName
