@@ -17,7 +17,7 @@ docker-compose-shared.yml
 /magento
 /src/*
 src
+/pub/*
 !/bin/mage
 !/build/package.json
-pub/.gitkeep
 .composer/
