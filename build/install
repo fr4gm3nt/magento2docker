@@ -12,13 +12,6 @@ echo {{PROJECT_FOLDER}}"/"
    git clone $GITREPO {{PROJECT_FOLDER}}
 fi
 
-cd magento
-
-cp -r ./* ".{{PROJECT_FOLDER}}/"
-# cd "$(dirname "$0")/.."
-
-cd ..
-
 #
 # Creating external network for nginx-proxy.
 # https://github.com/jwilder/nginx-proxy
@@ -39,6 +32,7 @@ docker-compose up -d
 #
 # Get latest db name and import
 #
+echo -e " \e[0;33m ---===Git operations - switch branch to {{BRANCH}}====---"
 cd src/dbdump
 git checkout {{BRANCH}}
 sleep 5
@@ -53,6 +47,14 @@ echo -n -e "\e[1;37mDatabase file to import: $dumpName\n"
 cd ../../
 
 sleep 5
+
+
+cd magento
+
+cp -r ./* ".{{PROJECT_FOLDER}}/"
+# cd "$(dirname "$0")/.."
+
+cd ..
 
 echo -e " \e[0;33m ---===Setting up file permissions====---"
 docker-compose exec php bash -c "setfacl -dR -m u:www-data:rwX /usr/share/nginx/html"
