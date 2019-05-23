@@ -19,3 +19,4 @@ docker-compose-shared.yml
 src
 !/bin/mage
 !/build/package.json
+pub/.gitkeep
